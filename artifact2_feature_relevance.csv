@@ -1,0 +1,16 @@
+Feature,n,Source,Spearman_rho,Abs_rho,p_value,Significant_p<0.05
+Num_S,80,DFT/RDKit,-0.339,0.339,0.0021,True
+Ionization_Potential,80,DFT/RDKit,-0.234,0.234,0.0367,True
+Molecular_Weight,80,DFT/RDKit,0.212,0.212,0.0588,False
+Chemical_Hardness,80,DFT/RDKit,-0.196,0.196,0.0818,False
+Num_Aromatic_Ring,80,DFT/RDKit,0.185,0.185,0.0996,False
+Num_O,80,DFT/RDKit,0.176,0.176,0.1185,False
+Dipole_Moment,80,DFT/RDKit,0.128,0.128,0.2596,False
+Num_F,80,DFT/RDKit,-0.127,0.127,0.2609,False
+MSD_CoM_393K,80,MD,-0.065,0.065,0.5641,False
+E_ads_0K,80,MD,-0.057,0.057,0.6169,False
+LogP,74,DFT/RDKit,-0.038,0.038,0.7462,False
+E_ads_333K,80,MD,0.032,0.032,0.7757,False
+Num_N,80,DFT/RDKit,0.026,0.026,0.8193,False
+Electrophilicity_Index,80,DFT/RDKit,-0.025,0.025,0.8266,False
+E_ads_298K,80,MD,0.016,0.016,0.8867,False

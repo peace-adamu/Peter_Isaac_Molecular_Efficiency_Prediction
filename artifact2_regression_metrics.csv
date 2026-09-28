@@ -1,0 +1,5 @@
+Model,CV_R2,CV_RMSE,Test_R2,Test_RMSE,Test_Spearman
+Random Forest,-0.098,10.412,-0.069,14.082,0.185
+XGBoost,-0.338,11.391,-0.2,14.923,-0.168
+SVR,-0.046,10.236,-0.233,15.125,-0.129
+Baseline_Mean,-0.103,10.659,-0.036,13.867,0.106

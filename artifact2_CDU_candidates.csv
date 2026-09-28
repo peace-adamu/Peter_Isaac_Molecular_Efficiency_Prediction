@@ -1,0 +1,6 @@
+Molecule,Group,IE_pct,E_ads_333K,MSD_CoM_393K,MD_source,CDU_pass
+Oleuropein,Organic,98.86,-251.230811,1.83,measured,True
+Quaternium-32,Ionic Liquid,94.0,-317.79056462696315,1.123892282854863,surrogate,True
+Sulfamerazine,Green Inhibitor,84.56,-304.4242852365387,1.8781985089352145,surrogate,True
+Sulfapyridine,Green Inhibitor,76.84,-283.1790134774332,4.882846999541748,surrogate,True
+1-butyl-3-methylimidazolium bis(trifluoromethylsulfonyl)imide,Ionic Liquid,72.2,-391.92718831380915,0.20878323363862833,surrogate,True
