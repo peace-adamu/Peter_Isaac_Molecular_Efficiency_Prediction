@@ -8,7 +8,7 @@ import streamlit as st
 
 
 # ============================================================
-# Artifact 2 — Molecular Efficiency, MD Integration and CDU
+# Molecular Efficiency, MD Integration and CDU
 # ============================================================
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "artifact2_best_model.pkl"
@@ -43,14 +43,14 @@ FEATURE_LABELS = {
 }
 
 st.set_page_config(
-    page_title="Artifact 2 | Molecular Efficiency Prediction",
+    page_title="Molecular Efficiency Prediction",
     page_icon="🧪",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 
-@st.cache_resource(show_spinner="Loading Artifact 2 model...")
+@st.cache_resource(show_spinner="Loading prediction model...")
 def load_model():
     if not MODEL_PATH.exists():
         raise FileNotFoundError("artifact2_best_model.pkl is missing.")
@@ -73,7 +73,7 @@ try:
     model = load_model()
     master_df = load_master()
 except Exception as exc:
-    st.error("The Artifact 2 deployment files could not be loaded.")
+    st.error("The prediction model and reference data could not be loaded.")
     st.exception(exc)
     st.info("Confirm that app.py, artifact2_best_model.pkl, and artifact2_step2_full_features.csv are in the same repository folder.")
     st.stop()
@@ -96,7 +96,7 @@ def make_feature_frame(values: dict[str, Any] | pd.DataFrame) -> pd.DataFrame:
     if isinstance(values, pd.DataFrame):
         missing = [feature for feature in MODEL_FEATURES if feature not in values.columns]
         if missing:
-            raise ValueError("Missing required Artifact 2 features: " + ", ".join(missing))
+                raise ValueError("Missing required model features: " + ", ".join(missing))
         frame = values[MODEL_FEATURES].copy()
     else:
         frame = pd.DataFrame([{feature: values[feature] for feature in MODEL_FEATURES}])
@@ -106,7 +106,7 @@ def make_feature_frame(values: dict[str, Any] | pd.DataFrame) -> pd.DataFrame:
 
     if frame.isna().any().any():
         invalid = frame.columns[frame.isna().any()].tolist()
-        raise ValueError("All 9 Artifact 2 model inputs must be numeric and non-empty: " + ", ".join(invalid))
+        raise ValueError("All nine model inputs must be numeric and non-empty: " + ", ".join(invalid))
     return frame
 
 
@@ -137,7 +137,7 @@ def render_result_card(row: pd.Series):
     st.markdown(
         f"""
         <div style='border:1px solid #d7dde5;border-left:8px solid {color};border-radius:10px;padding:1.15rem 1.3rem;background:#ffffff;margin:.5rem 0 1rem 0;'>
-          <div style='font-size:.78rem;color:#667085;text-transform:uppercase;letter-spacing:.08em;'>Artifact 2 prediction result</div>
+          <div style='font-size:.78rem;color:#667085;text-transform:uppercase;letter-spacing:.08em;'>Prediction result</div>
           <div style='font-size:2rem;font-weight:750;color:#16324f;margin:.15rem 0 .55rem 0;'>Predicted IE%: {ie:.2f}%</div>
           <div style='display:flex;gap:2.8rem;flex-wrap:wrap;'>
             <div><span style='color:#667085;'>CDU suitability</span><br><b style='color:{color};'>{status}</b></div>
@@ -161,8 +161,8 @@ def render_feature_context(frame: pd.DataFrame):
 # ============================================================
 # Sidebar navigation
 # ============================================================
-st.sidebar.title("Artifact 2")
-st.sidebar.caption("Molecular Efficiency, MD Integration and CDU Suitability")
+st.sidebar.title("Molecular Efficiency Prediction")
+st.sidebar.caption("Molecular dynamics integration and CDU suitability screening")
 page = st.sidebar.radio(
     "Navigate",
     ["Prediction", "Master Dataset", "Model Performance", "Feature Relevance", "CDU Candidates"],
@@ -170,7 +170,7 @@ page = st.sidebar.radio(
 st.sidebar.divider()
 st.sidebar.markdown("**Verified model**")
 st.sidebar.write("Random Forest Regressor")
-st.sidebar.write("9 Artifact 2 features")
+st.sidebar.write("Nine model features")
 st.sidebar.caption("CDU rule: MSD CoM at 393 K ≤ 5 Å²")
 
 
@@ -181,29 +181,53 @@ if page == "Prediction":
     st.markdown(
         """
         <div style='text-align:center;padding:.6rem 0 1.1rem 0;'>
-          <div style='font-size:.82rem;font-weight:700;letter-spacing:.16em;color:#667085;'>ARTIFACT 2</div>
           <div style='font-size:2rem;font-weight:800;letter-spacing:.03em;color:#16324f;margin-top:.35rem;'>MOLECULAR EFFICIENCY PREDICTION</div>
-          <div style='font-size:1.03rem;color:#475467;margin-top:.3rem;'>Machine-learning prediction of inhibitor efficiency with molecular-dynamics integration and CDU suitability screening.</div>
+          <div style='font-size:1.03rem;color:#475467;margin-top:.3rem;'>An intelligent computational application for predicting molecular inhibitor efficiency and screening candidate molecules for desorption suitability.</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    with st.expander("About this application", expanded=True):
+    st.markdown("## INTRODUCTION")
+    st.markdown(
+        """
+        **This project is owned by:**  
+        **Okenye Isaac Ebipade**  
+        Final Year Student, Department of Chemical Engineering  
+        Federal University of Petroleum Resources, Effurun (FUPRE)  
+        *In partial fulfillment of the requirements for the award of Bachelor of Engineering (B.Eng) Degree*
+
+        ### MOLECULAR EFFICIENCY PREDICTION
+
+        *An intelligent application for the machine-learning prediction of molecular inhibitor efficiency, integration of molecular-dynamics descriptors, and computational screening of candidate molecules for desorption suitability.*
+        """
+    )
+
+    with st.expander("About this project and how to use this app", expanded=True):
         st.markdown(
             """
-            This application is based on **Artifact 2**, which integrates molecular descriptors with molecular-dynamics-derived features. The study contains 80 molecules from four chemical groups. Eight molecules have measured MD results; the remaining MD values in the master table are surrogate estimates generated by models trained on those eight measured cases.
+            ### Project overview
 
-            The main Random Forest model predicts **Inhibition Efficiency (IE%)**. CDU suitability is evaluated independently using the fixed rule **MSD CoM at 393 K ≤ 5 Å²**. A passing result indicates suitability under this computational screening rule; it is not a substitute for experimental confirmation or a full molecular-dynamics study.
+            This chemical-engineering project applies computational chemistry and supervised machine learning to the preliminary assessment of molecular inhibitor performance. Molecular and electronic descriptors are combined with adsorption-energy and molecular-dynamics information to estimate **inhibition efficiency (IE%)** and support the screening of candidate molecules before experimental or extended simulation work.
 
-            For the most transparent use, select a molecule from the master dataset. You may also enter the nine Artifact 2 model features manually or upload a batch CSV containing those columns.
+            The reference study contains 80 molecules distributed across four chemical groups. Molecular-dynamics results are available for eight molecules, while surrogate models provide estimates for the remaining entries. These estimated values are identified in the dataset and should be interpreted as directional screening information rather than confirmed simulation measurements.
+
+            The prediction model is a Random Forest regression model. Computational desorption suitability is assessed independently using the stated criterion **MSD CoM at 393 K ≤ 5 Å²**. A passing result indicates suitability under this screening rule only; it does not replace laboratory validation, adsorption testing, or a complete molecular-dynamics investigation.
+
+            ### How to use this application
+
+            1. Select **Reference Molecule** to load the descriptors of one of the 80 study molecules.
+            2. Select **Manual 9-Feature Entry** when all model inputs are available for a new case.
+            3. Select **Batch CSV Upload** to process several molecules at once and download the prediction results.
+            4. Review the predicted IE%, the MSD-based CDU decision, and the input-feature summary.
+            5. Use the supporting pages to examine the reference dataset, model performance, feature relevance, and CDU candidate list.
             """
         )
 
     input_mode = st.radio("Input method", ["Reference Molecule", "Manual 9-Feature Entry", "Batch CSV Upload"], horizontal=True)
 
     if input_mode == "Batch CSV Upload":
-        st.subheader("Batch Artifact 2 prediction")
+        st.subheader("Batch prediction")
         st.write("Upload a CSV containing the nine model features below. Any extra columns are preserved in the downloadable output.")
         uploaded = st.file_uploader("Choose a CSV file", type=["csv"])
         if uploaded is not None:
@@ -214,7 +238,7 @@ if page == "Prediction":
                 st.error("Missing required columns: " + ", ".join(missing))
             else:
                 st.dataframe(batch.head(10), use_container_width=True, hide_index=True)
-                if st.button("Run Artifact 2 batch prediction", type="primary"):
+                if st.button("Run batch prediction", type="primary"):
                     try:
                         frame = make_feature_frame(batch)
                         predictions = predict_frame(frame)
@@ -222,7 +246,7 @@ if page == "Prediction":
                         st.success(f"Predicted {len(export):,} rows.")
                         st.dataframe(export, use_container_width=True, hide_index=True)
                         st.download_button(
-                            "Download Artifact 2 results",
+                            "Download prediction results",
                             export.to_csv(index=False).encode("utf-8"),
                             "artifact2_predictions.csv",
                             "text/csv",
@@ -237,7 +261,7 @@ if page == "Prediction":
         selected_row = None
         if input_mode == "Reference Molecule":
             molecule_names = master_df["Molecule"].astype(str).tolist()
-            selected_name = st.selectbox("Select a molecule from the 80-row Artifact 2 master table", molecule_names)
+            selected_name = st.selectbox("Select a molecule from the 80-row reference dataset", molecule_names)
             selected_row = master_df.loc[master_df["Molecule"].astype(str) == selected_name].iloc[0]
             st.caption(
                 f"Group: {selected_row.get('Group', '—')} · "
@@ -246,7 +270,7 @@ if page == "Prediction":
             )
 
         with st.form("artifact2_prediction_form"):
-            st.subheader("Artifact 2 model features")
+            st.subheader("Model input features")
             columns = st.columns(3)
             values = {}
             for i, feature in enumerate(MODEL_FEATURES):
@@ -256,13 +280,13 @@ if page == "Prediction":
                         FEATURE_LABELS[feature],
                         value=default,
                         format="%.6f",
-                        help=f"Artifact 2 model feature: {feature}",
+                        help=f"Prediction-model feature: {feature}",
                     )
             submitted = st.form_submit_button("Run prediction", type="primary", use_container_width=True)
 
         if submitted:
             if any(value is None for value in values.values()):
-                st.error("All nine Artifact 2 model features are required.")
+                st.error("All nine model features are required.")
             else:
                 try:
                     frame = make_feature_frame(values)
@@ -279,8 +303,8 @@ if page == "Prediction":
 # Master dataset page
 # ============================================================
 elif page == "Master Dataset":
-    st.title("Artifact 2 Master Dataset")
-    st.write("The 80-row full-feature table after measured MD integration and surrogate filling.")
+    st.title("Reference Dataset")
+    st.write("The 80-row full-feature table after measured molecular-dynamics integration and surrogate filling.")
     st.warning("Rows marked `surrogate` contain estimated MD features. They should be treated as directional screening values, not as measured simulation results.")
     source_options = sorted(master_df.get("MD_source", pd.Series(dtype=str)).dropna().unique().tolist())
     selected_sources = st.multiselect("Filter by MD source", source_options, default=source_options)
@@ -300,14 +324,14 @@ elif page == "Master Dataset":
 # ============================================================
 elif page == "Model Performance":
     st.title("Model Performance")
-    st.warning("These are the notebook's reported cross-validation and held-out test metrics. The model was selected by Test Spearman ρ, as documented in Artifact 2.")
+    st.warning("These are the reported cross-validation and held-out test metrics. The model was selected using Test Spearman ρ, the primary ranking metric for this study.")
     if metrics_df.empty:
         st.info("artifact2_regression_metrics.csv was not found.")
     else:
         st.dataframe(metrics_df, use_container_width=True, hide_index=True)
         st.markdown(
             """
-            **Interpretation note.** Artifact 2 uses Test Spearman ρ as the primary selection metric because the objective is ranking molecular efficiency. The dataset is small, and 72 of the 80 rows contain surrogate-filled MD features; therefore, these results should be interpreted as exploratory rather than as proof of broad generalization.
+            **Interpretation note.** Test Spearman ρ is used as the primary selection metric because the objective is ranking molecular efficiency. The dataset is small, and 72 of the 80 rows contain surrogate-filled MD features; therefore, these results should be interpreted as exploratory rather than as proof of broad generalization.
             """
         )
 
@@ -317,7 +341,7 @@ elif page == "Model Performance":
 # ============================================================
 elif page == "Feature Relevance":
     st.title("Feature Relevance and Explainability")
-    st.write("Feature selection and global SHAP importance reported by the Artifact 2 notebook.")
+    st.write("Correlation-based feature selection and global SHAP importance for the prediction model.")
     if not relevance_df.empty:
         st.subheader("Correlation-based feature relevance")
         st.caption("The notebook applied p < 0.10 to DFT/RDKit features. All four MD features were included unconditionally by design.")
@@ -333,7 +357,7 @@ elif page == "Feature Relevance":
 # ============================================================
 else:
     st.title("CDU Suitability Candidates")
-    st.write("Candidates satisfying the Artifact 2 rule: **MSD CoM at 393 K ≤ 5 Å²**.")
+    st.write("Candidates satisfying the computational screening rule: **MSD CoM at 393 K ≤ 5 Å²**.")
     st.warning("Only one measured molecule is reported by the notebook as passing this threshold. Any surrogate-predicted pass is unverified and should be treated as directional.")
     if cdu_df.empty:
         st.info("artifact2_CDU_candidates.csv was not found.")
